@@ -2,13 +2,13 @@ version: '3'
 
 services:
   awesome:
-   image: awesome
+   image: awesome:0.1
    ports:
      - 8080
    environment:
      - SERVICE_PORTS=8080
    deploy:
-     replicas: 20
+     replicas: 2
      update_config:
        parallelism: 5
        delay: 10s
@@ -24,7 +24,7 @@ services:
     depends_on:
       - awesome
     environment:
-      - BALANCE=leastconn
+      - BALANCE=roundrobin
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
