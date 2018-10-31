@@ -22,10 +22,15 @@ do
 		   	curl http://$var_ip
 			echo "\n"
            	   done
+	           docker service ls 
+		   echo "\n"
 		   ;;
 		"Access to the Load Balancer") echo "you choose 3"
+		   container_name=$(docker container ls | grep prod_proxy | awk '{print $15}')
+	           docker container exec -it $container_name /bin/sh
 		   ;;
 		"Access to the Web Server 1") echo "you choose 4"
+		   web1_name=$docker
 		   ;;
 		"Access to the Web server 2") echo "you choose 5"
 		   ;;
