@@ -12,7 +12,7 @@ echo "*********************************"
 ### Creation of a select Menu
 ### 
 PS3="Please choose an option >> "
-options=("Build the solution" "Test the solution" "Access to the Load Balancer" "Access to the Web Server 1" "Access to the Web Server 2" "Exit")
+options=("Build the solution" "Test the solution" "Access to the Load Balancer" "Access to the Web Server 1" "Access to the Web Server 2" "Remove the solution" "Exit")
 select opt in "${options[@]}";
 do 
   	case $opt in 
@@ -54,22 +54,32 @@ do
 		### End -- 4 Option
 
 		### 5 Option - Give you the access directly to the web server number 2
-		"Access to the Web server 2")
+		"Access to the Web Server 2")
 		   web2_name=$(docker container ls | grep prod_awesome.2. | awk '{print $12}')                    
 		   docker container exec -it $web2_name /bin/bash
 		   ;;
 		### End -- 5 Option
 
-		### 6 Option - You will quit the menu
+		### 6 Option - Remove the entire solution that has been did in the first option
+		"Remove the solution")
+		   docker stack rm prod 
+		   docker swarm leave --force 
+		   docker image rm awesome:0.1
+		   ;;
+		### End -- 6 Option
+		
+
+		### 7 Option - You will quit the menu
 		"Exit")
 		   break
 		   ;;
-		### End -- 6 Option
+		### End -- 7 Option
 
 		### Other Option
 		*) echo "Invalid option Please retry " ;;
 		### End -- Other Option
 	esac
+	REPLY=""
 done
 
 ###
