@@ -1,42 +1,77 @@
+###
+### Greeting
+###
 printf "Hi Fashion Cloud \nThis is a simple demonstration for the devops challenge \nBy SEDKI KETATA \n"
 
 echo "*********************************"
 echo "***  Please choose an option  ***"
 echo "*********************************"
 
+
+###
+### Creation of a select Menu
+### 
 PS3="Please choose an option >> "
 options=("Build the solution" "Test the solution" "Access to the Load Balancer" "Access to the Web Server 1" "Access to the Web Server 2" "Exit")
 select opt in "${options[@]}";
 do 
   	case $opt in 
+
+		### 1 Option - Creating a nodejs webserver image (Docker) and build the infrastructure using Docker Swarm
 		"Build the solution") 
 		   docker build -t awesome:0.1 .
 		   docker swarm init 
 		   docker stack deploy --compose-file=docker-compose.yml prod
 		   echo "\n"
 		   ;;
+		### End -- 1 Option
+
+		### 2 Option - This will test that the LB works and redirect the requests to the two web servers each try
 		"Test the solution")
 		   var_ip=$(hostname -I | awk '{print $1}')
 		   for i in `seq 1 10`;
 		   do 
 		   	curl http://$var_ip
-			echo "\n"
+			printf "\n"
            	   done
 	           docker service ls 
-		   echo "\n"
+		   printf "\n"
 		   ;;
-		"Access to the Load Balancer") echo "you choose 3"
+		### End -- 2 Option 
+
+		### 3 Option - Give you the access to the LB directly using ssh
+		"Access to the Load Balancer")
 		   container_name=$(docker container ls | grep prod_proxy | awk '{print $15}')
 	           docker container exec -it $container_name /bin/sh
 		   ;;
-		"Access to the Web Server 1") echo "you choose 4"
-		   web1_name=$docker
+		### End -- 3 Option
+
+		### 4 Option - Give you the access directly to the web server number 1 
+		"Access to the Web Server 1")
+		   web1_name=$(docker container ls | grep prod_awesome.1. | awk '{print $12}')
+		   docker container exec -it $web1_name /bin/bash
 		   ;;
-		"Access to the Web server 2") echo "you choose 5"
+		### End -- 4 Option
+
+		### 5 Option - Give you the access directly to the web server number 2
+		"Access to the Web server 2")
+		   web2_name=$(docker container ls | grep prod_awesome.2. | awk '{print $12}')                    
+		   docker container exec -it $web2_name /bin/bash
 		   ;;
-		"Exit") echo "you choose 6"
-		     break
+		### End -- 5 Option
+
+		### 6 Option - You will quit the menu
+		"Exit")
+		   break
 		   ;;
+		### End -- 6 Option
+
+		### Other Option
 		*) echo "Invalid option Please retry " ;;
+		### End -- Other Option
 	esac
 done
+
+###
+### End -- Creation of the select Menu
+###
