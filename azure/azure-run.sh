@@ -16,9 +16,6 @@ workers=2
 id=""
 location="West Europe"
 
-source ./box.sh
-
-box "Creating A Docker Machine to Manage Azure Hosts"
 docker-machine create \
       --driver azure \
       --azure-location $location \
@@ -28,7 +25,6 @@ docker-machine create \
 ip=$(docker-machine ssh leader1 ifconfig eth0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1)
 for node in $(seq 1 $workers);
 do
-   box "Node worker $node" "light-purple" "red"
    docker-machine create \
       --driver azure \
       --azure-location $location \
@@ -47,9 +43,13 @@ do
 done
 
 eval $(docker-machine env leader1)
-## box "Overlay Network creation" "light_purple" "blue"
+# Creating an overlay network
 docker network create -d overlay swarmnet
-## box "Starting WebStack services" "light_green" "green"
+
+# Creating awesome docker image
+docker image build -t awesome:0.1 -f ../Dockerfile
+
+# Creating stack services
 docker service create --name web1 --network swarmnet --publish 8080:8080 awesome:0.1
 docker service create --name web2 --network swarmnet --publish 8080:8080 awesome:0.1
 docker service create --name lb   --network swarmnet --publish 80:80 dockercloud/haproxy
@@ -72,8 +72,4 @@ do
 done
 
 docker run -it -d -p 5000:5000 -e HOST=$(docker-machine ip leader1) -e PORT=5000 -v /var/run/docker.sock:/var/run/docker.sock manomarks/visualizer
-# box "Open web browser to visualize cluster" "light_purple" "green"
-# open http://$(docker-machine ip leader1):5000
 
-# box "To scale type:eval \$(docker-machine env leader1) && docker service scale web=10" "red" "red"
-# box "To remove swarm cluster and cleanup: ./remove.sh" "red" "red"
